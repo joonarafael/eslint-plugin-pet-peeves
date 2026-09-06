@@ -85,7 +85,7 @@ ruleTester.run("max-operands", rule, {
   ],
 });
 
-test("max-operands validates max", () => {
+void test("max-operands validates max", () => {
   for (const max of [-1, 1.5, 101]) {
     const linter = new Linter();
 

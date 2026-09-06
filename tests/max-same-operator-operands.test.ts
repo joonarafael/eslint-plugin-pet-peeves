@@ -89,7 +89,7 @@ ruleTester.run("max-same-operator-operands", rule, {
   ],
 });
 
-test("max-same-operator-operands validates max", () => {
+void test("max-same-operator-operands validates max", () => {
   for (const max of [-1, 1.5, 101]) {
     const linter = new Linter();
 

@@ -42,7 +42,7 @@ const rule: Rule.RuleModule = {
     const max = getMax(context.options as Options);
 
     return {
-      LogicalExpression(node) {
+      LogicalExpression(node): void {
         const expression = node as LogicalExpression;
         const parent = expression.parent;
 

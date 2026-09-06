@@ -27,7 +27,7 @@ These examples are invalid:
 
 ```js
 a && b && c && d && e;
-a && b && c || d && e || f;
+(a && b && c) || (d && e) || f;
 ```
 
 The rule reports the complete offending logical expression and does not provide an automatic fix.
