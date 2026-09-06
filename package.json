@@ -18,7 +18,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.tests.json",
-    "test": "npm run build && npm run typecheck && tsx --test tests/*.test.ts",
+    "test": "npm run build && npm run typecheck && npm run test:run",
+    "test:run": "tsx --test tests/*.test.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",

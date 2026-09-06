@@ -36,4 +36,4 @@ jobs:
         run: npm run build
 
       - name: Testing
-        run: tsx --test tests/*.test.ts
+        run: npm run test:run
