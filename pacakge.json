@@ -1,0 +1,29 @@
+{
+    "name": "eslint-plugin-pet-peeves",
+    "version": "0.1.0",
+    "description": "",
+    "type": "module",
+    "main": "./src/index.js",
+    "exports": {
+      ".": "./src/index.js"
+    },
+    "files": [
+      "src"
+    ],
+    "scripts": {
+      "test": "node --test",
+      "lint": "eslint ."
+    },
+    "peerDependencies": {
+      "eslint": "^9.0.0"
+    },
+    "devDependencies": {
+      "eslint": "^9.0.0"
+    },
+    "keywords": [
+      "eslint",
+      "eslintplugin",
+      "eslint-plugin"
+    ],
+    "license": "MIT"
+  }
