@@ -6,10 +6,10 @@ on:
 
   workflow_dispatch:
     inputs:
-      dry_run:
-        description: "Dry Run: pack & verify without publishing"
-        type: boolean
-        default: true
+      version:
+        description: "Version to publish, as X.Y.Z or vX.Y.Z. Leave empty to run a dry run (pack & verify without publishing)."
+        type: string
+        default: ""
 
 concurrency:
   group: publish
@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   publish:
-    name: ${{ github.event.inputs.dry_run == 'true' && 'Dry run' || 'Publish' }}
+    name: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.version == '') && 'Dry run' || 'Publish' }}
 
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -42,6 +42,42 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
+      - name: Determine Version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            RAW_VERSION="${{ github.event.release.tag_name }}"
+          else
+            RAW_VERSION="${{ github.event.inputs.version }}"
+          fi
+
+          if [ -z "$RAW_VERSION" ]; then
+            echo "No version provided; running as a dry run."
+            {
+              echo "is_dry_run=true"
+              echo "version="
+            } >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Strip an optional leading "v" (e.g. v1.2.3 -> 1.2.3)
+          VERSION="${RAW_VERSION#v}"
+
+          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::'$RAW_VERSION' is not a valid version. Expected vX.Y.Z or X.Y.Z (integer.integer.integer)."
+            exit 1
+          fi
+
+          echo "Resolved version: $VERSION"
+          {
+            echo "is_dry_run=false"
+            echo "version=$VERSION"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Set Package Version
+        if: steps.version.outputs.is_dry_run != 'true'
+        run: npm pkg set version="${{ steps.version.outputs.version }}"
+
       - name: Build & Test
         run: npm test
 
@@ -53,11 +89,11 @@ jobs:
           npm pack --json | jq -r '.[0].files[].path'
 
       - name: Publish Package to npmjs.org
-        if: ${{ github.event_name == 'release' || github.event.inputs.dry_run != 'true' }}
+        if: steps.version.outputs.is_dry_run != 'true'
         run: npm publish --access public --provenance
 
       - name: Dry Run Summary
-        if: ${{ github.event.inputs.dry_run == 'true' }}
+        if: steps.version.outputs.is_dry_run == 'true'
         run: |
           echo "✅ Dry Run complete: the package was built and verified but NOT published."
-          echo "   Re-run this workflow with 'Dry Run' unchecked to publish for real."
+          echo "   Re-run this workflow with a version (X.Y.Z or vX.Y.Z) to publish for real."
