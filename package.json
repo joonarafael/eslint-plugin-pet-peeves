@@ -1,0 +1,51 @@
+{
+  "name": "eslint-plugin-pet-peeves",
+  "version": "0.1.0",
+  "description": "Opinionated ESLint rules for keeping JavaScript expressions readable.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "docs"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.tests.json",
+    "test": "npm run build && npm run typecheck && tsx --test tests/*.test.ts",
+    "lint": "eslint .",
+    "prepack": "npm test"
+  },
+  "peerDependencies": {
+    "eslint": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "24.13.3",
+    "eslint": "^9.0.0",
+    "tsx": "4.23.13",
+    "typescript": "7.0.2"
+  },
+  "keywords": [
+    "eslint",
+    "eslintplugin",
+    "eslint-plugin"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joonarafael/eslint-plugin-pet-peeves.git"
+  },
+  "bugs": {
+    "url": "https://github.com/joonarafael/eslint-plugin-pet-peeves/issues"
+  },
+  "homepage": "https://github.com/joonarafael/eslint-plugin-pet-peeves#readme",
+  "license": "MIT",
+  "allowScripts": {
+    "esbuild@0.28.2": true
+  }
+}
