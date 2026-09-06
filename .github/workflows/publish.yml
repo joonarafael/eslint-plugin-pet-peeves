@@ -22,7 +22,9 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
 
-    environment: Production
+    environment:
+      name: Production
+      url: https://www.npmjs.com/package/eslint-plugin-pet-peeves
 
     permissions:
       contents: read
