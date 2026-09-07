@@ -27,7 +27,7 @@ const rule: Rule.RuleModule = {
     schema: maxOptionSchema,
     messages: {
       tooManyOperands:
-        "This logical expression has {{count}} operands. The maximum allowed is {{max}}.",
+        "This logical expression has {{count}} operands. The maximum allowed is {{max}}. Extract parts into named variables or helper functions.",
     },
   },
 

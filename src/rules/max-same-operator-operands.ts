@@ -34,7 +34,7 @@ const rule: Rule.RuleModule = {
     schema: maxOptionSchema,
     messages: {
       tooManyOperands:
-        "This '{{operator}}' chain has {{count}} operands. The maximum allowed is {{max}}.",
+        "This '{{operator}}' chain has {{count}} operands. The maximum allowed is {{max}}. Extract parts into named variables or helper functions.",
     },
   },
 
