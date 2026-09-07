@@ -85,10 +85,12 @@ jobs:
 
       - name: Pack (Inspect Tarball)
         run: |
-          npm pack --dry-run
+          npm pack --dry-run --ignore-scripts
+
           echo "---"
           echo "Tarball contents:"
-          npm pack --json | jq -r '.[0].files[].path'
+
+          npm pack --dry-run --json --ignore-scripts | jq -r '.[0].files[].path'
 
       - name: Publish Package to npmjs.org
         if: steps.version.outputs.is_dry_run != 'true'
