@@ -18,7 +18,7 @@ export const maxOptionSchema = [
       max: {
         type: "integer",
         minimum: 0,
-        maximum: 100,
+        maximum: 32,
       },
     },
     required: ["max"],
@@ -34,4 +34,8 @@ export function isLogicalExpression(
 
 export function getMax(options: Options): number {
   return options[0]?.max ?? DEFAULT_MAX;
+}
+
+export function isDisabledMax(max: number): boolean {
+  return max < 2;
 }

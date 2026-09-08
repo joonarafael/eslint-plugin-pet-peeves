@@ -2,6 +2,7 @@ import type { Rule } from "eslint";
 
 import {
   getMax,
+  isDisabledMax,
   isLogicalExpression,
   maxOptionSchema,
   type LogicalExpression,
@@ -40,6 +41,10 @@ const rule: Rule.RuleModule = {
 
   create(context) {
     const max = getMax(context.options as Options);
+
+    if (isDisabledMax(max)) {
+      return {};
+    }
 
     return {
       LogicalExpression(node): void {

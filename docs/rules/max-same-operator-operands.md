@@ -48,7 +48,9 @@ The rule accepts an object with a `max` property:
 }
 ```
 
-`max` must be an integer from `0` through `100`. It defaults to `4` when the option is omitted.
+`max` must be an integer from `0` through `32`. It defaults to `4` when the option is omitted.
+
+`0` and `1` disable the rule. A logical chain always has at least two operands, so those values cannot constrain anything and the rule reports nothing.
 
 With `{ max: 3 }`, these examples are valid:
 
