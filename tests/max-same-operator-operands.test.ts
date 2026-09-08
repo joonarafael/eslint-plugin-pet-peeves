@@ -34,6 +34,18 @@ ruleTester.run("max-same-operator-operands", rule, {
       code: "a || b || c || d || e;",
       options: [{ max: 1 }],
     },
+    {
+      code: "a || b || c || d || e;",
+      options: [{ max: 2, ignore: ["||"] }],
+    },
+    {
+      code: "a && b && c || d && e || f;",
+      options: [{ max: 3, ignore: ["||"] }],
+    },
+    {
+      code: "a && b && c && d && e;",
+      options: [{ max: 2, ignore: ["&&", "||", "??"] }],
+    },
   ],
   invalid: [
     {
@@ -84,6 +96,36 @@ ruleTester.run("max-same-operator-operands", rule, {
         },
       ],
     },
+    {
+      code: "a && b && c && d;",
+      options: [{ max: 3, ignore: ["||"] }],
+      errors: [
+        {
+          messageId: "tooManyOperands",
+          data: { operator: "&&", count: 4, max: 3 },
+        },
+      ],
+    },
+    {
+      code: "a && b && c || d && e || f;",
+      options: [{ max: 2, ignore: ["||"] }],
+      errors: [
+        {
+          messageId: "tooManyOperands",
+          data: { operator: "&&", count: 3, max: 2 },
+        },
+      ],
+    },
+    {
+      code: "a || b || c || d || e;",
+      options: [{ max: 2, ignore: [] }],
+      errors: [
+        {
+          messageId: "tooManyOperands",
+          data: { operator: "||", count: 5, max: 2 },
+        },
+      ],
+    },
   ],
 });
 
@@ -103,6 +145,29 @@ void test("max-same-operator-operands validates max", () => {
           },
           rules: {
             "test/max-same-operator-operands": ["error", { max }],
+          },
+        },
+      ]);
+    });
+  }
+});
+
+void test("max-same-operator-operands validates ignore", () => {
+  for (const ignore of [["+"], ["||", "||"], "||"]) {
+    const linter = new Linter();
+
+    assert.throws(() => {
+      linter.verify("a || b;", [
+        {
+          plugins: {
+            test: {
+              rules: {
+                "max-same-operator-operands": rule,
+              },
+            },
+          },
+          rules: {
+            "test/max-same-operator-operands": ["error", { max: 4, ignore }],
           },
         },
       ]);
