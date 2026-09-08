@@ -37,15 +37,19 @@ if (hasActiveSubscription && canEdit) {
 
 ## Options
 
-The rule accepts an object with a `max` property:
+The rule accepts an object with a `max` property and an optional `ignore` array:
 
 ```js
 {
-  "pet-peeves/max-operands": ["error", { max: 4 }]
+  "pet-peeves/max-operands": ["error", { max: 4, ignore: ["||"] }]
 }
 ```
 
-`max` must be an integer from `0` through `100`. It defaults to `4` when the option is omitted.
+`max` must be an integer from `0` through `32`. It defaults to `4` when the option is omitted.
+
+`ignore` is an array of logical operators (`&&`, `||`, `??`) that the rule should not count. It defaults to `[]` when omitted. An ignored operator is treated as a boundary: operands on either side are counted separately, and a chain that uses only ignored operators is not reported.
+
+`0` and `1` disable the rule. A logical expression always has at least two operands, so those values cannot constrain anything and the rule reports nothing.
 
 With `{ max: 4 }`, these examples are valid:
 
@@ -59,6 +63,19 @@ These examples are invalid:
 ```js
 a && b && c && d && e;
 (a && b && c) || (d && e) || f;
+```
+
+With `{ max: 4, ignore: ["||"] }`, these examples are valid:
+
+```js
+a || b || c || d || e;
+(a && b && c) || (d && e);
+```
+
+This example is still invalid, because the `&&` operands are counted:
+
+```js
+(a && b && c && d && e) || f;
 ```
 
 The rule reports the complete offending logical expression and does not provide an automatic fix.

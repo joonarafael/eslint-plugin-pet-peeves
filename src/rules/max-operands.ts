@@ -1,18 +1,24 @@
 import type { Rule } from "eslint";
 
 import {
+  getIgnore,
   getMax,
+  isDisabledMax,
   isLogicalExpression,
   maxOptionSchema,
+  type LogicalOperator,
   type Options,
 } from "./shared.js";
 
-function countOperands(node: Rule.Node): number {
-  if (!isLogicalExpression(node)) {
+function countOperands(
+  node: Rule.Node,
+  ignore: ReadonlySet<LogicalOperator>,
+): number {
+  if (!isLogicalExpression(node) || ignore.has(node.operator)) {
     return 1;
   }
 
-  return countOperands(node.left) + countOperands(node.right);
+  return countOperands(node.left, ignore) + countOperands(node.right, ignore);
 }
 
 const rule: Rule.RuleModule = {
@@ -32,15 +38,28 @@ const rule: Rule.RuleModule = {
   },
 
   create(context) {
-    const max = getMax(context.options as Options);
+    const options = context.options as Options;
+    const max = getMax(options);
+    const ignore = getIgnore(options);
+
+    if (isDisabledMax(max)) {
+      return {};
+    }
 
     return {
       LogicalExpression(node): void {
-        if (isLogicalExpression(node.parent)) {
+        if (!isLogicalExpression(node) || ignore.has(node.operator)) {
           return;
         }
 
-        const count = countOperands(node);
+        if (
+          isLogicalExpression(node.parent) &&
+          !ignore.has(node.parent.operator)
+        ) {
+          return;
+        }
+
+        const count = countOperands(node, ignore);
 
         if (count > max) {
           context.report({

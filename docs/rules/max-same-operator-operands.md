@@ -40,15 +40,22 @@ const canPublish = isComplete && authorMayPublish && !post.scheduledAt;
 
 ## Options
 
-The rule accepts an object with a `max` property:
+The rule accepts an object with a `max` property and an optional `ignore` array:
 
 ```js
 {
-  "pet-peeves/max-same-operator-operands": ["error", { max: 4 }]
+  "pet-peeves/max-same-operator-operands": [
+    "error",
+    { max: 4, ignore: ["||"] },
+  ]
 }
 ```
 
-`max` must be an integer from `0` through `100`. It defaults to `4` when the option is omitted.
+`max` must be an integer from `0` through `32`. It defaults to `4` when the option is omitted.
+
+`ignore` is an array of logical operators (`&&`, `||`, `??`) whose chains the rule should skip. It defaults to `[]` when omitted. Other operators are still limited.
+
+`0` and `1` disable the rule. A logical chain always has at least two operands, so those values cannot constrain anything and the rule reports nothing.
 
 With `{ max: 3 }`, these examples are valid:
 
@@ -63,6 +70,18 @@ These examples are invalid:
 ```js
 a && b && c && d;
 a || b || c || d;
+```
+
+With `{ max: 3, ignore: ["||"] }`, this example is valid:
+
+```js
+a || b || c || d;
+```
+
+This example is still invalid, because the `&&` chain is still limited:
+
+```js
+a && b && c && d;
 ```
 
 The rule reports each complete offending chain and does not provide an automatic fix.

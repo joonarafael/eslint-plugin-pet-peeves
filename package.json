@@ -54,6 +54,7 @@
   "homepage": "https://github.com/joonarafael/eslint-plugin-pet-peeves#readme",
   "license": "MIT",
   "allowScripts": {
-    "esbuild@0.28.2": true
+    "esbuild@0.28.2": true,
+    "fsevents@2.3.3": true
   }
 }

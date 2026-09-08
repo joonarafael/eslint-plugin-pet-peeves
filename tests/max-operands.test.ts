@@ -26,6 +26,26 @@ ruleTester.run("max-operands", rule, {
       code: "a && call(b || c);",
       options: [{ max: 2 }],
     },
+    {
+      code: "a && b && c && d && e;",
+      options: [{ max: 0 }],
+    },
+    {
+      code: "a && b && c && d && e;",
+      options: [{ max: 1 }],
+    },
+    {
+      code: "a || b || c || d || e;",
+      options: [{ max: 2, ignore: ["||"] }],
+    },
+    {
+      code: "a && b && c || d && e || f;",
+      options: [{ max: 3, ignore: ["||"] }],
+    },
+    {
+      code: "a && b && c && d && e;",
+      options: [{ max: 2, ignore: ["&&", "||", "??"] }],
+    },
   ],
   invalid: [
     {
@@ -73,12 +93,32 @@ ruleTester.run("max-operands", rule, {
       ],
     },
     {
-      code: "a && b;",
-      options: [{ max: 0 }],
+      code: "a && b && c && d && e;",
+      options: [{ max: 4, ignore: ["||"] }],
       errors: [
         {
           messageId: "tooManyOperands",
-          data: { count: 2, max: 0 },
+          data: { count: 5, max: 4 },
+        },
+      ],
+    },
+    {
+      code: "(a && b && c && d && e) || f;",
+      options: [{ max: 4, ignore: ["||"] }],
+      errors: [
+        {
+          messageId: "tooManyOperands",
+          data: { count: 5, max: 4 },
+        },
+      ],
+    },
+    {
+      code: "a || b || c || d || e;",
+      options: [{ max: 2, ignore: [] }],
+      errors: [
+        {
+          messageId: "tooManyOperands",
+          data: { count: 5, max: 2 },
         },
       ],
     },
@@ -86,7 +126,7 @@ ruleTester.run("max-operands", rule, {
 });
 
 void test("max-operands validates max", () => {
-  for (const max of [-1, 1.5, 101]) {
+  for (const max of [-1, 1.5, 33]) {
     const linter = new Linter();
 
     assert.throws(() => {
@@ -101,6 +141,29 @@ void test("max-operands validates max", () => {
           },
           rules: {
             "test/max-operands": ["error", { max }],
+          },
+        },
+      ]);
+    });
+  }
+});
+
+void test("max-operands validates ignore", () => {
+  for (const ignore of [["+"], ["||", "||"], "||"]) {
+    const linter = new Linter();
+
+    assert.throws(() => {
+      linter.verify("a && b;", [
+        {
+          plugins: {
+            test: {
+              rules: {
+                "max-operands": rule,
+              },
+            },
+          },
+          rules: {
+            "test/max-operands": ["error", { max: 4, ignore }],
           },
         },
       ]);
