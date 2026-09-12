@@ -2,9 +2,26 @@
 
 > **Work in progress.** This document will grow as more internal conventions are documented.
 
+## Setup
+
+```sh
+npm install
+npm test
+```
+
+`npm run build` compiles the TypeScript source to JavaScript and declarations in `dist`.
+
+Useful scripts:
+
+- `npm test` — build, typecheck, and run tests
+- `npm run lint` / `npm run lint:fix`
+- `npm run format` / `npm run format:check`
+
 ## Versioning
 
-The `version` field in `package.json` is **not** updated manually in this repo. It is set only by the [`publish`](../.github/workflows/publish.yml) CI workflow, right before publishing.
+The `version` field in `package.json` is **not** updated manually in this repo.
+
+It is set only by the [`publish`](../.github/workflows/publish.yml) CI workflow, right before publishing.
 
 - On a `release` event, the version is derived from the associated Git tag (e.g. `v1.2.3`).
 - On a manual `workflow_dispatch` run, the version comes from the `version` input.
