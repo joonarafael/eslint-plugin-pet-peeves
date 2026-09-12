@@ -1,7 +1,7 @@
 {
   "name": "eslint-plugin-pet-peeves",
   "version": "0.1.0",
-  "description": "Opinionated ESLint rules for keeping JavaScript expressions readable.",
+  "description": "Opinionated ESLint rules for JavaScript and JSX readability — limit long &&/||/?? expressions and pad large JSX siblings.",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -42,7 +42,14 @@
   "keywords": [
     "eslint",
     "eslintplugin",
-    "eslint-plugin"
+    "eslint-plugin",
+    "readability",
+    "jsx",
+    "react",
+    "logical-expression",
+    "complexity",
+    "opinionated",
+    "code-style"
   ],
   "repository": {
     "type": "git",
