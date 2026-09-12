@@ -21,6 +21,10 @@ export default [
     rules: {
       "pet-peeves/max-operands": ["error", { max: 8 }],
       "pet-peeves/max-same-operator-operands": ["error", { max: 4 }],
+      "pet-peeves/padding-between-large-jsx-elements": [
+        "error",
+        { minLines: 8 },
+      ],
     },
   },
 ];
@@ -30,8 +34,9 @@ export default [
 
 - [`max-operands`](docs/rules/max-operands.md) limits all operands in a connected logical expression.
 - [`max-same-operator-operands`](docs/rules/max-same-operator-operands.md) limits operands in each same-operator logical chain.
+- [`padding-between-large-jsx-elements`](docs/rules/padding-between-large-jsx-elements.md) requires a blank line between adjacent large JSX elements and fragments.
 
-Both rules support `&&`, `||`, and `??`.
+The logical-expression rules support `&&`, `||`, and `??`.
 
 ## Development
 
