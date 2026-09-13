@@ -2,10 +2,13 @@ import type { Rule } from "eslint";
 
 const DEFAULT_MIN_LINES = 8;
 
+type ExpressionContainerMode = "none" | "jsxOnly" | "all";
+
 type Options = [
   {
     minLines: number;
     padAroundAnyLargeElement?: boolean;
+    expressionContainers?: ExpressionContainerMode;
   }?,
 ];
 
@@ -24,6 +27,19 @@ interface JSXContainer extends JSXChild {
   children: JSXChild[];
 }
 
+interface ExpressionLike {
+  type: string;
+  left?: ExpressionLike;
+  right?: ExpressionLike;
+  consequent?: ExpressionLike;
+  alternate?: ExpressionLike;
+}
+
+interface JSXExpressionContainerChild extends JSXChild {
+  type: "JSXExpressionContainer";
+  expression: ExpressionLike;
+}
+
 const optionSchema = [
   {
     type: "object",
@@ -36,6 +52,10 @@ const optionSchema = [
       padAroundAnyLargeElement: {
         type: "boolean",
       },
+      expressionContainers: {
+        type: "string",
+        enum: ["none", "jsxOnly", "all"],
+      },
     },
     required: ["minLines"],
     additionalProperties: false,
@@ -46,8 +66,59 @@ function isJSXElementOrFragment(child: JSXChild): child is JSXContainer {
   return child.type === "JSXElement" || child.type === "JSXFragment";
 }
 
+function isJSXExpressionContainer(
+  child: JSXChild,
+): child is JSXExpressionContainerChild {
+  return child.type === "JSXExpressionContainer";
+}
+
 function isWhitespaceJSXText(child: JSXChild): boolean {
   return child.type === "JSXText" && /^\s*$/u.test(child.value ?? "");
+}
+
+// Recognizes expressions that render JSX either directly (`<Foo />`) or
+// conditionally (`cond && <Foo />`, `cond || <Foo />`, `cond ? <A /> : <B />`).
+function containsJSXRendering(expression: ExpressionLike): boolean {
+  switch (expression.type) {
+    case "JSXElement":
+    case "JSXFragment":
+      return true;
+    case "LogicalExpression":
+      return (
+        (expression.left !== undefined &&
+          containsJSXRendering(expression.left)) ||
+        (expression.right !== undefined &&
+          containsJSXRendering(expression.right))
+      );
+    case "ConditionalExpression":
+      return (
+        (expression.consequent !== undefined &&
+          containsJSXRendering(expression.consequent)) ||
+        (expression.alternate !== undefined &&
+          containsJSXRendering(expression.alternate))
+      );
+    default:
+      return false;
+  }
+}
+
+function isPaddableChild(
+  child: JSXChild,
+  expressionContainers: ExpressionContainerMode,
+): boolean {
+  if (isJSXElementOrFragment(child)) {
+    return true;
+  }
+
+  if (expressionContainers === "none" || !isJSXExpressionContainer(child)) {
+    return false;
+  }
+
+  if (expressionContainers === "all") {
+    return true;
+  }
+
+  return containsJSXRendering(child.expression);
 }
 
 function getLineCount(node: JSXChild): number {
@@ -77,6 +148,7 @@ const rule: Rule.RuleModule = {
     const minLines = options[0]?.minLines ?? DEFAULT_MIN_LINES;
     const padAroundAnyLargeElement =
       options[0]?.padAroundAnyLargeElement ?? false;
+    const expressionContainers = options[0]?.expressionContainers ?? "none";
 
     if (minLines === 0) {
       return {};
@@ -88,14 +160,14 @@ const rule: Rule.RuleModule = {
     return {
       "JSXElement, JSXFragment"(node: Rule.Node): void {
         const container = node as unknown as JSXContainer;
-        let previousElement: JSXContainer | undefined;
+        let previousElement: JSXChild | undefined;
 
         for (const child of container.children) {
           if (isWhitespaceJSXText(child)) {
             continue;
           }
 
-          if (!isJSXElementOrFragment(child)) {
+          if (!isPaddableChild(child, expressionContainers)) {
             previousElement = undefined;
             continue;
           }

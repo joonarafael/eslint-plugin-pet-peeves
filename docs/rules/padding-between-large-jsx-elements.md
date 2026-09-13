@@ -49,13 +49,13 @@ The blank line makes the two substantial sections visually distinct without spre
 
 ## Options
 
-The rule accepts an object with `minLines` and `padAroundAnyLargeElement` properties:
+The rule accepts an object with `minLines`, `padAroundAnyLargeElement`, and `expressionContainers` properties:
 
 ```js
 {
   "pet-peeves/padding-between-large-jsx-elements": [
     "error",
-    { minLines: 8, padAroundAnyLargeElement: false },
+    { minLines: 8, padAroundAnyLargeElement: false, expressionContainers: "none" },
   ]
 }
 ```
@@ -131,9 +131,9 @@ With that option, the previous example becomes invalid, and the fixer adds a bla
 
 ## Scope
 
-Only direct JSX element and fragment siblings are compared. Whitespace-only JSX text between them is ignored. Other children, including text, comments, and expression containers, break adjacency.
+Only direct JSX element and fragment siblings are compared. Whitespace-only JSX text between them is ignored. Other children, including text, comments, and expression containers, break adjacency by default.
 
-Elements wrapped in expression containers are therefore not compared:
+Elements wrapped in expression containers are therefore not compared by default:
 
 ```jsx
 <>
@@ -143,6 +143,63 @@ Elements wrapped in expression containers are therefore not compared:
 ```
 
 Fragments participate on both sides of the rule. Two adjacent multiline fragments require padding, and direct children inside a fragment are checked in the same way as children inside a JSX element.
+
+### `expressionContainers`
+
+Set `expressionContainers` to opt expression containers (`{...}`) into the comparison. It accepts three values:
+
+- `"none"` (default) — expression containers always break adjacency, as shown above. This matches the rule's original behavior, so existing configs are unaffected.
+- `"jsxOnly"` — an expression container is treated like an element when its expression renders JSX: directly (`{<Foo />}`), through `&&`/`||` (`{cond && <Foo />}`), or through a ternary (`{cond ? <A /> : <B />}`). The container's own span, including the wrapping condition, counts toward its line total. Anything else (`{value}`, `{formatDate(x)}`, comments) still breaks adjacency.
+- `"all"` — every expression container is treated like an element, regardless of what it contains. This also covers list rendering (`{items.map((item) => <Item key={item.id} />)}`) and comments (`{/* ... */}`).
+
+With `{ minLines: 8, expressionContainers: "jsxOnly" }`, the earlier example becomes invalid once each container spans at least 8 lines, including the wrapping condition:
+
+```jsx
+<>
+  {showFirst && (
+    <First
+      prop1={prop1}
+      prop2={prop2}
+      prop3={prop3}
+      prop4={prop4}
+      prop5={prop5}
+    />
+  )}
+  {showSecond && (
+    <Second
+      prop1={prop1}
+      prop2={prop2}
+      prop3={prop3}
+      prop4={prop4}
+      prop5={prop5}
+    />
+  )}
+</>
+```
+
+A plain expression, like `{value}`, still breaks adjacency under `"jsxOnly"` since it doesn't render JSX:
+
+```jsx
+<>
+  <First
+    prop1={prop1}
+    prop2={prop2}
+    prop3={prop3}
+    prop4={prop4}
+    prop5={prop5}
+  />
+  {value}
+  <Second
+    prop1={prop1}
+    prop2={prop2}
+    prop3={prop3}
+    prop4={prop4}
+    prop5={prop5}
+  />
+</>
+```
+
+Under `"all"`, that same `{value}` becomes a comparable sibling in its own right, checked against each neighbor using the same `minLines`/`padAroundAnyLargeElement` rules as any other pair — a short expression like `{value}` simply won't be "large" enough on its own to require padding.
 
 ## When not to use it
 
