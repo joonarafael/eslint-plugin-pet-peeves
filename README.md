@@ -73,10 +73,7 @@ export default defineConfig({
   rules: {
     "pet-peeves/max-operands": ["error", { max: 8 }],
     "pet-peeves/max-same-operator-operands": ["error", { max: 4 }],
-    "pet-peeves/padding-between-large-jsx-elements": [
-      "error",
-      { minLines: 8 },
-    ],
+    "pet-peeves/padding-between-large-jsx-elements": ["error", { minLines: 8 }],
   },
 });
 ```
