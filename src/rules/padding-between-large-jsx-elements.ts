@@ -5,6 +5,7 @@ const DEFAULT_MIN_LINES = 8;
 type Options = [
   {
     minLines: number;
+    padAroundAnyLargeElement?: boolean;
   }?,
 ];
 
@@ -31,6 +32,9 @@ const optionSchema = [
         type: "integer",
         minimum: 0,
         maximum: 999,
+      },
+      padAroundAnyLargeElement: {
+        type: "boolean",
       },
     },
     required: ["minLines"],
@@ -63,12 +67,16 @@ const rule: Rule.RuleModule = {
     messages: {
       missingPadding:
         "Add a blank line between adjacent JSX elements when each spans at least {{minLines}} lines.",
+      missingPaddingEither:
+        "Add a blank line between adjacent JSX elements when either one spans at least {{minLines}} lines.",
     },
   },
 
   create(context) {
     const options = context.options as Options;
     const minLines = options[0]?.minLines ?? DEFAULT_MIN_LINES;
+    const padAroundAnyLargeElement =
+      options[0]?.padAroundAnyLargeElement ?? false;
 
     if (minLines === 0) {
       return {};
@@ -94,26 +102,33 @@ const rule: Rule.RuleModule = {
 
           const precedingElement = previousElement;
 
-          if (
-            precedingElement !== undefined &&
-            getLineCount(precedingElement) >= minLines &&
-            getLineCount(child) >= minLines
-          ) {
-            const lineDifference =
-              child.loc.start.line - precedingElement.loc.end.line;
+          if (precedingElement !== undefined) {
+            const precedingIsLarge = getLineCount(precedingElement) >= minLines;
+            const childIsLarge = getLineCount(child) >= minLines;
 
-            if (lineDifference < 2) {
-              context.report({
-                node: child,
-                messageId: "missingPadding",
-                data: { minLines },
-                fix(fixer) {
-                  return fixer.insertTextAfterRange(
-                    precedingElement.range,
-                    linebreak.repeat(2 - lineDifference),
-                  );
-                },
-              });
+            const requiresPadding = padAroundAnyLargeElement
+              ? precedingIsLarge || childIsLarge
+              : precedingIsLarge && childIsLarge;
+
+            if (requiresPadding) {
+              const lineDifference =
+                child.loc.start.line - precedingElement.loc.end.line;
+
+              if (lineDifference < 2) {
+                context.report({
+                  node: child,
+                  messageId: padAroundAnyLargeElement
+                    ? "missingPaddingEither"
+                    : "missingPadding",
+                  data: { minLines },
+                  fix(fixer) {
+                    return fixer.insertTextAfterRange(
+                      precedingElement.range,
+                      linebreak.repeat(2 - lineDifference),
+                    );
+                  },
+                });
+              }
             }
           }
 

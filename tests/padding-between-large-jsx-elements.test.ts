@@ -44,6 +44,8 @@ const sevenLineA = jsxElement("A", 7);
 const sevenLineB = jsxElement("B", 7);
 const eightLineA = jsxElement("A", 8);
 const eightLineB = jsxElement("B", 8);
+const oneLineA = jsxElement("A", 1);
+const oneLineB = jsxElement("B", 1);
 
 ruleTester.run("padding-between-large-jsx-elements", rule, {
   valid: [
@@ -74,6 +76,33 @@ ${indent(eightLineA, 4)}
 ${indent(eightLineB, 4)}
   )}
 </>;`,
+    },
+    // padAroundAnyLargeElement defaults to false: one large sibling next to
+    // a small one still doesn't require padding (regression for the
+    // pre-existing "both must qualify" behavior).
+    {
+      code: siblings(eightLineA, "\n", oneLineB),
+      options: [{ minLines: 8 }],
+    },
+    {
+      code: siblings(eightLineA, "\n", oneLineB),
+      options: [{ minLines: 8, padAroundAnyLargeElement: false }],
+    },
+    // padAroundAnyLargeElement: true still allows two small siblings to sit
+    // together, since neither one meets the threshold.
+    {
+      code: siblings(sevenLineA, "\n", sevenLineB),
+      options: [{ minLines: 8, padAroundAnyLargeElement: true }],
+    },
+    // padAroundAnyLargeElement: true is satisfied by an existing blank line
+    // even when only one side is large.
+    {
+      code: siblings(eightLineA, "\n\n", oneLineB),
+      options: [{ minLines: 8, padAroundAnyLargeElement: true }],
+    },
+    {
+      code: siblings(oneLineA, "\n\n", eightLineB),
+      options: [{ minLines: 8, padAroundAnyLargeElement: true }],
     },
   ],
   invalid: [
@@ -125,6 +154,44 @@ ${indent(eightLineB, 4)}
       output: siblings(eightLineA, "\n\n", eightLineB).replaceAll("\n", "\r\n"),
       errors: [{ messageId: "missingPadding" }],
     },
+    // padAroundAnyLargeElement: true pads when only the preceding element
+    // is large, even though the following element is a single line.
+    {
+      code: siblings(eightLineA, "\n", oneLineB),
+      output: siblings(eightLineA, "\n\n", oneLineB),
+      options: [{ minLines: 8, padAroundAnyLargeElement: true }],
+      errors: [
+        {
+          messageId: "missingPaddingEither",
+          data: { minLines: 8 },
+        },
+      ],
+    },
+    // ...and when only the following element is large.
+    {
+      code: siblings(oneLineA, "\n", eightLineB),
+      output: siblings(oneLineA, "\n\n", eightLineB),
+      options: [{ minLines: 8, padAroundAnyLargeElement: true }],
+      errors: [
+        {
+          messageId: "missingPaddingEither",
+          data: { minLines: 8 },
+        },
+      ],
+    },
+    // Still reports (with the "both" message) when both sides are large
+    // and padAroundAnyLargeElement is explicitly disabled.
+    {
+      code: siblings(eightLineA, "\n", eightLineB),
+      output: siblings(eightLineA, "\n\n", eightLineB),
+      options: [{ minLines: 8, padAroundAnyLargeElement: false }],
+      errors: [
+        {
+          messageId: "missingPadding",
+          data: { minLines: 8 },
+        },
+      ],
+    },
   ],
 });
 
@@ -149,6 +216,37 @@ void test("padding-between-large-jsx-elements validates minLines", () => {
           },
           rules: {
             "test/padding-between-large-jsx-elements": ["error", { minLines }],
+          },
+        },
+      ]);
+    });
+  }
+});
+
+void test("padding-between-large-jsx-elements validates padAroundAnyLargeElement", () => {
+  for (const padAroundAnyLargeElement of ["true", 1, null]) {
+    const linter = new Linter();
+
+    assert.throws(() => {
+      linter.verify("<><A /><B /></>;", [
+        {
+          languageOptions: {
+            parserOptions: {
+              ecmaFeatures: { jsx: true },
+            },
+          },
+          plugins: {
+            test: {
+              rules: {
+                "padding-between-large-jsx-elements": rule,
+              },
+            },
+          },
+          rules: {
+            "test/padding-between-large-jsx-elements": [
+              "error",
+              { minLines: 8, padAroundAnyLargeElement },
+            ],
           },
         },
       ]);
