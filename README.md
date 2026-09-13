@@ -3,11 +3,9 @@
 [![npm version](https://img.shields.io/npm/v/eslint-plugin-pet-peeves)](https://www.npmjs.com/package/eslint-plugin-pet-peeves)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-Opinionated ESLint rules for JavaScript and JSX readability.
+Opinionated ESLint rules for JavaScript and JSX readability. Some rules might split opinions.
 
-A six-clause `if` is a riddle. Two chunky JSX blocks with no blank line are a blur. This plugin nags about long `&&` / `||` / `??` expressions and cramped JSX — and only those.
-
-t will be controversial. These are not best practices or correctness checks.
+These are not best practices or correctness checks.
 
 They are purely opinionated readability preferences that concern me. If you or your teammates disagree, that's expected. Don't enable the rule.
 
@@ -54,5 +52,7 @@ Options, examples, and when _not_ to use a rule live in each doc.
 ## License
 
 [MIT](LICENSE)
+
+## Contributing
 
 Local setup and versioning: [Development](docs/development.md).
