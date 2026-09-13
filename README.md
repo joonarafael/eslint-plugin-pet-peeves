@@ -13,13 +13,15 @@ Pick the peeves you actually have.
 
 ## Install
 
-Requires [ESLint](https://eslint.org) 9 or 10 (flat config).
+Requires [ESLint](https://eslint.org) 9 or 10 (flat config), or [Oxlint](https://oxc.rs/docs/guide/usage/linter) with JS plugins.
 
 ```sh
 npm install --save-dev eslint-plugin-pet-peeves
 ```
 
 ## Usage
+
+### ESLint
 
 ```js
 import petPeeves from "eslint-plugin-pet-peeves";
@@ -39,6 +41,44 @@ export default [
     },
   },
 ];
+```
+
+### Oxlint
+
+Oxlint can load this package as a [JS plugin](https://oxc.rs/docs/guide/usage/linter/js-plugins) (alpha). Add the package to `jsPlugins` and enable the rules you want.
+
+`.oxlintrc.json`:
+
+```json
+{
+  "jsPlugins": ["eslint-plugin-pet-peeves"],
+  "rules": {
+    "pet-peeves/max-operands": ["error", { "max": 8 }],
+    "pet-peeves/max-same-operator-operands": ["error", { "max": 4 }],
+    "pet-peeves/padding-between-large-jsx-elements": [
+      "error",
+      { "minLines": 8 }
+    ]
+  }
+}
+```
+
+`oxlint.config.ts`:
+
+```ts
+import { defineConfig } from "oxlint";
+
+export default defineConfig({
+  jsPlugins: ["eslint-plugin-pet-peeves"],
+  rules: {
+    "pet-peeves/max-operands": ["error", { max: 8 }],
+    "pet-peeves/max-same-operator-operands": ["error", { max: 4 }],
+    "pet-peeves/padding-between-large-jsx-elements": [
+      "error",
+      { minLines: 8 },
+    ],
+  },
+});
 ```
 
 ## Rules
