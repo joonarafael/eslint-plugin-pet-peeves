@@ -152,7 +152,26 @@ Set `expressionContainers` to opt expression containers (`{...}`) into the compa
 - `"jsxOnly"` — an expression container is treated like an element when its expression renders JSX: directly (`{<Foo />}`), through `&&`/`||` (`{cond && <Foo />}`), or through a ternary (`{cond ? <A /> : <B />}`). The container's own span, including the wrapping condition, counts toward its line total. Anything else (`{value}`, `{formatDate(x)}`, comments) still breaks adjacency.
 - `"all"` — every expression container is treated like an element, regardless of what it contains. This also covers list rendering (`{items.map((item) => <Item key={item.id} />)}`) and comments (`{/* ... */}`).
 
-With `{ minLines: 8, expressionContainers: "jsxOnly" }`, the earlier example becomes invalid once each container spans at least 8 lines, including the wrapping condition:
+With `{ minLines: 8, expressionContainers: "jsxOnly" }`, the earlier example becomes invalid once each container spans at least 8 lines, including the wrapping condition.
+
+This also covers the case where a **plain JSX element** sits directly next to an expression container that renders JSX. By default the expression container breaks adjacency and no padding is required:
+
+```jsx
+<>
+  <AttributeRow         {/* 8+ lines — large */}
+    title={title}
+    value={value}
+    usedPoints={usedPoints}
+    unit={unit}
+    hoverTip={hoverTip}
+  />
+  {isExpanded && !canUseSkill && (   {/* no blank line required by default */}
+    <ErrorDetails />
+  )}
+</>
+```
+
+With `expressionContainers: "jsxOnly"` the pair is compared and padding is required once both reach `minLines`. Add `padAroundAnyLargeElement: true` if you want padding whenever **either** neighbor is large, regardless of the container's own size:
 
 ```jsx
 <>
