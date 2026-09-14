@@ -173,6 +173,26 @@ ${indent(eightLineB, 4)}
       code: siblings(oneLineA, "\n\n", eightLineB),
       options: [{ minLines: 8, padAroundAnyLargeElement: true }],
     },
+    // expressionContainers: "none" (default): a large pure JSX element directly
+    // before a JSX expression container is valid because the expression container
+    // breaks adjacency — no padding is required even though the element is large.
+    {
+      code: `<>
+${indent(eightLineA)}
+  {first && (
+${indent(eightLineB, 4)}
+  )}
+</>;`,
+    },
+    // …and the same holds when the expression container comes first.
+    {
+      code: `<>
+  {first && (
+${indent(eightLineA, 4)}
+  )}
+${indent(eightLineB)}
+</>;`,
+    },
   ],
   invalid: [
     {
@@ -327,6 +347,126 @@ ${indent(eightLineB, 4)}
       errors: [
         {
           messageId: "missingPadding",
+          data: { minLines: 8 },
+        },
+      ],
+    },
+    // expressionContainers: "jsxOnly": a pure JSX element directly before a
+    // large JSX expression container (both >= minLines) requires padding —
+    // this is the scenario from issue #11.
+    {
+      code: `<>
+${indent(eightLineA)}
+  {first && (
+${indent(eightLineB, 4)}
+  )}
+</>;`,
+      output: `<>
+${indent(eightLineA)}
+
+  {first && (
+${indent(eightLineB, 4)}
+  )}
+</>;`,
+      options: [{ minLines: 8, expressionContainers: "jsxOnly" }],
+      errors: [
+        {
+          messageId: "missingPadding",
+          data: { minLines: 8 },
+        },
+      ],
+    },
+    // …and symmetrically when the expression container comes first.
+    {
+      code: `<>
+  {first && (
+${indent(eightLineA, 4)}
+  )}
+${indent(eightLineB)}
+</>;`,
+      output: `<>
+  {first && (
+${indent(eightLineA, 4)}
+  )}
+
+${indent(eightLineB)}
+</>;`,
+      options: [{ minLines: 8, expressionContainers: "jsxOnly" }],
+      errors: [
+        {
+          messageId: "missingPadding",
+          data: { minLines: 8 },
+        },
+      ],
+    },
+    // expressionContainers: "jsxOnly" + padAroundAnyLargeElement: true: a
+    // large pure JSX element directly before a *small* JSX expression container
+    // still requires padding because padAroundAnyLargeElement triggers on
+    // either neighbor being large.
+    {
+      code: `<>
+${indent(eightLineA)}
+  {first && <B />}
+</>;`,
+      output: `<>
+${indent(eightLineA)}
+
+  {first && <B />}
+</>;`,
+      options: [
+        { minLines: 8, expressionContainers: "jsxOnly", padAroundAnyLargeElement: true },
+      ],
+      errors: [
+        {
+          messageId: "missingPaddingEither",
+          data: { minLines: 8 },
+        },
+      ],
+    },
+    // expressionContainers: "all": a pure JSX element directly before a large
+    // expression container also requires padding (same as "jsxOnly" for a
+    // JSX-containing container, but "all" doesn't care what the container holds).
+    {
+      code: `<>
+${indent(eightLineA)}
+  {first && (
+${indent(eightLineB, 4)}
+  )}
+</>;`,
+      output: `<>
+${indent(eightLineA)}
+
+  {first && (
+${indent(eightLineB, 4)}
+  )}
+</>;`,
+      options: [{ minLines: 8, expressionContainers: "all" }],
+      errors: [
+        {
+          messageId: "missingPadding",
+          data: { minLines: 8 },
+        },
+      ],
+    },
+    // expressionContainers: "all" + padAroundAnyLargeElement: true: a large
+    // pure JSX element before a *small* expression container (even one that
+    // doesn't render JSX at all) requires padding.
+    {
+      code: `<>
+${indent(eightLineA)}
+  {value}
+</>;`,
+      output: `<>
+${indent(eightLineA)}
+
+  {value}
+</>;`,
+      options: [
+        { minLines: 8, expressionContainers: "all", padAroundAnyLargeElement: true },
+      ],
+      errors: [
+        {
+          messageId: "missingPaddingEither",
           data: { minLines: 8 },
         },
       ],
