@@ -414,7 +414,11 @@ ${indent(eightLineA)}
   {first && <B />}
 </>;`,
       options: [
-        { minLines: 8, expressionContainers: "jsxOnly", padAroundAnyLargeElement: true },
+        {
+          minLines: 8,
+          expressionContainers: "jsxOnly",
+          padAroundAnyLargeElement: true,
+        },
       ],
       errors: [
         {
@@ -462,7 +466,11 @@ ${indent(eightLineA)}
   {value}
 </>;`,
       options: [
-        { minLines: 8, expressionContainers: "all", padAroundAnyLargeElement: true },
+        {
+          minLines: 8,
+          expressionContainers: "all",
+          padAroundAnyLargeElement: true,
+        },
       ],
       errors: [
         {
