@@ -1,0 +1,7 @@
+{
+  "name": "pkg-a",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}

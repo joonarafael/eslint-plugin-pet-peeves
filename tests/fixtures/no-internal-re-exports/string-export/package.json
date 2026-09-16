@@ -1,0 +1,5 @@
+{
+  "name": "string-export",
+  "type": "module",
+  "exports": "./src/public.ts"
+}
