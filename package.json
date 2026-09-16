@@ -1,7 +1,7 @@
 {
   "name": "eslint-plugin-pet-peeves",
   "version": "0.1.0",
-  "description": "Opinionated ESLint rules for JavaScript and JSX readability — limit long &&/||/?? expressions and pad large JSX siblings.",
+  "description": "Opinionated ESLint rules for JavaScript and JSX readability — limit long &&/||/?? expressions, pad large JSX siblings, and keep internal modules from re-exporting.",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

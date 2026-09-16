@@ -11,6 +11,13 @@ They are purely opinionated readability preferences that concern me. If you or y
 
 Pick the peeves you actually have.
 
+> [!WARNING]
+> This plugin is still in development and the rules are not yet considered stable.
+>
+> Breaking changes may occur in minor and patch releases, so use with caution.
+>
+> Feedback is welcome; please report any issues or suggestions.
+
 ## Install
 
 Requires [ESLint](https://eslint.org) 9 or 10 (flat config), or [Oxlint](https://oxc.rs/docs/guide/usage/linter) with JS plugins.
@@ -34,6 +41,7 @@ export default [
     rules: {
       "pet-peeves/max-operands": ["error", { max: 8 }],
       "pet-peeves/max-same-operator-operands": ["error", { max: 4 }],
+      "pet-peeves/no-internal-re-exports": "error",
       "pet-peeves/padding-between-large-jsx-elements": [
         "error",
         { minLines: 8 },
@@ -55,6 +63,7 @@ Oxlint can load this package as a [JS plugin](https://oxc.rs/docs/guide/usage/li
   "rules": {
     "pet-peeves/max-operands": ["error", { "max": 8 }],
     "pet-peeves/max-same-operator-operands": ["error", { "max": 4 }],
+    "pet-peeves/no-internal-re-exports": "error",
     "pet-peeves/padding-between-large-jsx-elements": [
       "error",
       { "minLines": 8 }
@@ -73,6 +82,7 @@ export default defineConfig({
   rules: {
     "pet-peeves/max-operands": ["error", { max: 8 }],
     "pet-peeves/max-same-operator-operands": ["error", { max: 4 }],
+    "pet-peeves/no-internal-re-exports": "error",
     "pet-peeves/padding-between-large-jsx-elements": ["error", { minLines: 8 }],
   },
 });
@@ -82,6 +92,7 @@ export default defineConfig({
 
 - [`max-operands`](docs/rules/max-operands.md) — too many operands in one connected logical expression
 - [`max-same-operator-operands`](docs/rules/max-same-operator-operands.md) — too many operands in a single same-operator logical chain
+- [`no-internal-re-exports`](docs/rules/no-internal-re-exports.md) — re-exporting from internal modules instead of importing from the defining file
 - [`padding-between-large-jsx-elements`](docs/rules/padding-between-large-jsx-elements.md) — adjacent large JSX elements with no blank line (autofix)
 
 Options, examples, and when _not_ to use a rule live in each doc.
