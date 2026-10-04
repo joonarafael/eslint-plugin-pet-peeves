@@ -10,7 +10,9 @@ Named modifiers scope the relationship explicitly:
 
 ```jsx
 <li className="group/item">
-  <a className="group-hover/item:underline" href={href}>Edit</a>
+  <a className="group-hover/item:underline" href={href}>
+    Edit
+  </a>
 </li>
 ```
 
