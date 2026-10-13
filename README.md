@@ -42,6 +42,7 @@ export default [
       "pet-peeves/max-operands": ["error", { max: 8 }],
       "pet-peeves/max-same-operator-operands": ["error", { max: 4 }],
       "pet-peeves/no-internal-re-exports": "error",
+      "pet-peeves/no-interpolated-tailwind-class": "error",
       "pet-peeves/no-orphan-tailwind-group-peer": [
         "error",
         { kinds: ["group", "peer"] },
@@ -72,6 +73,7 @@ Oxlint can load this package as a [JS plugin](https://oxc.rs/docs/guide/usage/li
     "pet-peeves/max-operands": ["error", { "max": 8 }],
     "pet-peeves/max-same-operator-operands": ["error", { "max": 4 }],
     "pet-peeves/no-internal-re-exports": "error",
+    "pet-peeves/no-interpolated-tailwind-class": "error",
     "pet-peeves/no-orphan-tailwind-group-peer": [
       "error",
       { "kinds": ["group", "peer"] }
@@ -99,6 +101,7 @@ export default defineConfig({
     "pet-peeves/max-operands": ["error", { max: 8 }],
     "pet-peeves/max-same-operator-operands": ["error", { max: 4 }],
     "pet-peeves/no-internal-re-exports": "error",
+    "pet-peeves/no-interpolated-tailwind-class": "error",
     "pet-peeves/no-orphan-tailwind-group-peer": [
       "error",
       { kinds: ["group", "peer"] },
@@ -117,6 +120,7 @@ export default defineConfig({
 - [`max-operands`](docs/rules/max-operands.md) — too many operands in one connected logical expression
 - [`max-same-operator-operands`](docs/rules/max-same-operator-operands.md) — too many operands in a single same-operator logical chain
 - [`no-internal-re-exports`](docs/rules/no-internal-re-exports.md) — re-exporting from internal modules instead of importing from the defining file
+- [`no-interpolated-tailwind-class`](docs/rules/no-interpolated-tailwind-class.md) — interpolated template strings in Tailwind class names
 - [`no-orphan-tailwind-group-peer`](docs/rules/no-orphan-tailwind-group-peer.md) — Tailwind `group-*` / `peer-*` variants without a matching marker in the JSX tree
 - [`no-unnamed-tailwind-group-peer`](docs/rules/no-unnamed-tailwind-group-peer.md) — require named Tailwind `group` / `peer` markers and variants
 - [`padding-between-large-jsx-elements`](docs/rules/padding-between-large-jsx-elements.md) — adjacent large JSX elements with no blank line (autofix)
