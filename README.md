@@ -39,6 +39,7 @@ export default [
       "pet-peeves": petPeeves,
     },
     rules: {
+      "pet-peeves/max-components-per-directory": ["error", { max: 1 }],
       "pet-peeves/max-operands": ["error", { max: 8 }],
       "pet-peeves/max-same-operator-operands": ["error", { max: 4 }],
       "pet-peeves/no-internal-re-exports": "error",
@@ -70,6 +71,7 @@ Oxlint can load this package as a [JS plugin](https://oxc.rs/docs/guide/usage/li
 {
   "jsPlugins": ["eslint-plugin-pet-peeves"],
   "rules": {
+    "pet-peeves/max-components-per-directory": ["error", { "max": 1 }],
     "pet-peeves/max-operands": ["error", { "max": 8 }],
     "pet-peeves/max-same-operator-operands": ["error", { "max": 4 }],
     "pet-peeves/no-internal-re-exports": "error",
@@ -98,6 +100,7 @@ import { defineConfig } from "oxlint";
 export default defineConfig({
   jsPlugins: ["eslint-plugin-pet-peeves"],
   rules: {
+    "pet-peeves/max-components-per-directory": ["error", { max: 1 }],
     "pet-peeves/max-operands": ["error", { max: 8 }],
     "pet-peeves/max-same-operator-operands": ["error", { max: 4 }],
     "pet-peeves/no-internal-re-exports": "error",
@@ -117,6 +120,7 @@ export default defineConfig({
 
 ## Rules
 
+- [`max-components-per-directory`](docs/rules/max-components-per-directory.md) — too many distinct component files in one directory
 - [`max-operands`](docs/rules/max-operands.md) — too many operands in one connected logical expression
 - [`max-same-operator-operands`](docs/rules/max-same-operator-operands.md) — too many operands in a single same-operator logical chain
 - [`no-internal-re-exports`](docs/rules/no-internal-re-exports.md) — re-exporting from internal modules instead of importing from the defining file

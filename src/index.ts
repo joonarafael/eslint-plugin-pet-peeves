@@ -1,3 +1,4 @@
+import maxComponentsPerDirectory from "./rules/max-components-per-directory.js";
 import maxOperands from "./rules/max-operands.js";
 import maxSameOperatorOperands from "./rules/max-same-operator-operands.js";
 import noInternalReExports from "./rules/no-internal-re-exports.js";
@@ -7,6 +8,7 @@ import noUnnamedTailwindGroupPeer from "./rules/no-unnamed-tailwind-group-peer.j
 import paddingBetweenLargeJsxElements from "./rules/padding-between-large-jsx-elements.js";
 
 export const rules = {
+  "max-components-per-directory": maxComponentsPerDirectory,
   "max-operands": maxOperands,
   "max-same-operator-operands": maxSameOperatorOperands,
   "no-internal-re-exports": noInternalReExports,
